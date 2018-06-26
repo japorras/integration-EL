@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.DocWriteResponse.Result;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -84,12 +85,17 @@ public class RuleDao {
         return error;
     }
 
-    public void deleteRuleById(String id) {
+    public int deleteRuleById(String id) {
         DeleteRequest deleteRequest = new DeleteRequest(INDEX, TYPE, id);
         try {
             DeleteResponse deleteResponse = restHighLevelClient.delete(deleteRequest);
+            if (deleteResponse.getResult() == Result.DELETED)
+            	return 0;
+            else
+            	return 1;
         } catch (java.io.IOException e){
             e.getLocalizedMessage();
+            return 1;
         }
     }
 
